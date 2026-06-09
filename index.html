@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restricted Access</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:black;
+    color:#00ff66;
+    font-family:Consolas, monospace;
+    overflow:hidden;
+}
+
+/* 시작 로고 */
+#logo{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    object-fit:cover;
+
+    opacity:0;
+    animation:logoSequence 5s forwards;
+}
+
+/* 경보 로고 */
+#alertLogo{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    object-fit:cover;
+
+    opacity:0;
+    pointer-events:none;
+    z-index:50;
+}
+
+/* 붉은 섬광효과 */
+
+#redFlash{
+    position:fixed;
+    inset:0;
+
+    background:#ff0000;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    z-index:40;
+}
+
+
+@keyframes logoSequence{
+    0%{opacity:0;}
+    15%{opacity:1;}
+    70%{opacity:1;}
+    100%{opacity:0;}
+}
+
+.container{
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+
+    text-align:center;
+    padding:20px;
+}
+
+#line{
+    font-size:1.3rem;
+    min-height:40px;
+}
+
+.cursor{
+    animation:blink .8s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:0;
+    }
+}
+
+#denied{
+    display:none;
+}
+
+#continuePrompt{
+    display:none;
+    margin-top:25px;
+    color:#ffffff;
+    animation:blink 1.5s infinite;
+}
+
+#denied h1{
+    color:#ff3333;
+    font-size:3rem;
+    margin-bottom:15px;
+}
+
+#breach{
+    display:none;
+    max-width:900px;
+}
+
+#breach h1{
+    color:#ff3333;
+    font-size:2.4rem;
+    margin-bottom:20px;
+}
+
+#logs{
+    color:#ff6666;
+    margin-top:20px;
+    line-height:1.8;
+}
+
+body.alert{
+    animation:alertFlash 1.2s infinite;
+}
+
+@keyframes alertFlash{
+    0%{
+        background:black;
+    }
+
+    50%{
+        background:#330000;
+    }
+
+    100%{
+        background:black;
+    }
+}
+</style>
+
+</head>
+
+<body>
+<img id="logo" src="logo.png">
+<img id="alertLogo" src="logo_alert.png">
+
+<div id="redFlash"></div>
+
+<div class="container">
+
+    <div id="line"></div>
+
+    <div id="denied">
+
+    <h1>ACCESS DENIED</h1>
+    <p>접근 권한이 없습니다.</p>
+    <p>Unauthorized access attempt detected.</p>
+
+    <div id="continuePrompt">
+        <p>[ SYSTEM MESSAGE ]</p>
+        <br>
+        <p>Touch anywhere to retry</p>
+    </div>
+
+</div>
+
+<div id="breach">
+
+    <h1>⚠ SECURITY BREACH DETECTED ⚠</h1>
+
+    <p>보안 위협 감지</p>
+
+    <br>
+
+    <p>UNIDENTIFIED USER DETECTED</p>
+    <p>사용자 정보 : 신원 미상</p>
+
+    <br>
+
+    <p>TRACE PROTOCOL INITIATED</p>
+    <p>추적 프로토콜을 실행합니다.</p>
+
+    <div id="logs"></div>
+
+    <br>
+
+    <p style="color:#ff8888">
+        TRANSMITTING INCIDENT REPORT...
+    </p>
+
+    <br>
+
+    <p style="color:#aaa;font-size:.9rem;">
+        No actual data was collected.
+    </p>
+
+    <p style="color:white;">
+        Congratulations.<br>
+        You found the hidden page.
+    </p>
+
+</div>
+
+</div>
+
+<script>
+
+const alarm = new Audio("alarm.mp3");
+alarm.volume = 0.5;
+
+const line = document.getElementById("line");
+
+const messages = [
+    "SYSTEM CONNECTED",
+    "VERIFYING USER ID...",
+    "CHECKING ACCESS LEVEL...",
+    "RETRIEVING RECORDS...",
+    "AUTHORIZATION FAILED"
+];
+
+const fakeLogs = [
+    "[✓] NETWORK SIGNATURE CAPTURED / 사용자 네트워크 식별 정보 확보",
+    "[✓] DEVICE PROFILE CAPTURED / 사용자 장치 프로필 확보",
+    "[✓] GEOLOCATION ESTIMATED / 사용자 위치 정보 추정 완료",
+    "[✓] CONNECTION ANALYZED / 사용자 연결 정보 분석 완료",
+    "[✓] INCIDENT REPORT GENERATED / 보안 보고서 생성",
+    "[✓] SECURITY ALERT ISSUED / 경보 발령"
+];
+
+let msgIndex = 0;
+
+function typeText(text, callback){
+
+    let i = 0;
+
+    line.innerHTML = "";
+
+    const interval = setInterval(() => {
+
+        line.innerHTML =
+            text.substring(0, i + 1) +
+            '<span class="cursor">█</span>';
+
+        i++;
+
+        if(i >= text.length){
+
+            clearInterval(interval);
+
+            setTimeout(() => {
+                callback();
+            }, 700);
+
+        }
+
+    }, 50);
+}
+
+function startLogs(){
+
+    const logBox = document.getElementById("logs");
+
+    let i = 0;
+
+    const interval = setInterval(() => {
+
+        if(i >= fakeLogs.length){
+            clearInterval(interval);
+            return;
+        }
+
+        logBox.innerHTML += fakeLogs[i] + "<br>";
+
+        i++;
+
+    }, 700);
+}
+
+function showBreach(){
+
+    console.log("BREACH");
+
+    alarm.currentTime = 0;
+    alarm.play().catch(() => {});
+
+    document.getElementById("denied")
+        .style.display = "none";
+
+waitingForUser = true;
+
+setTimeout(() => {
+
+    document.getElementById("continuePrompt")
+        .style.display = "block";
+
+}, 1500);
+
+    const flash =
+        document.getElementById("redFlash");
+
+    const alertLogo =
+        document.getElementById("alertLogo");
+
+    flash.style.transition = "none";
+    flash.style.opacity = "1";
+
+    setTimeout(() => {
+
+        flash.style.transition =
+            "opacity 4.8s ease";
+
+        flash.style.opacity = "0";
+
+    }, 1000);
+
+    setTimeout(() => {
+
+        alertLogo.style.transition =
+            "opacity 3.5s ease";
+
+        alertLogo.style.opacity = "1";
+
+    }, 1000);
+
+    setTimeout(() => {
+
+        document.body.classList.add("alert");
+
+    }, 1800);
+
+setTimeout(() => {
+
+    alertLogo.style.opacity = "0";
+
+}, 3000);
+
+setTimeout(() => {
+
+    document.getElementById("breach")
+        .style.display = "block";
+
+    startLogs();
+
+}, 4500);
+
+}
+
+function nextMessage(){
+
+    if(msgIndex < messages.length){
+
+        typeText(messages[msgIndex], () => {
+
+            msgIndex++;
+
+            setTimeout(nextMessage, 400);
+
+        });
+
+    }else{
+
+        line.style.display = "none";
+
+document.getElementById("denied")
+    .style.display = "block";
+
+waitingForUser = true;
+
+setTimeout(() => {
+
+    document.getElementById("continuePrompt")
+        .style.display = "block";
+
+}, 1500);
+
+    }
+
+}
+
+
+let waitingForUser = false;
+
+document.addEventListener("click", () => {
+
+    if(!waitingForUser) return;
+
+    waitingForUser = false;
+
+    document.getElementById("continuePrompt")
+        .style.display = "none";
+
+    alarm.play()
+        .then(() => {
+
+            alarm.pause();
+            alarm.currentTime = 0;
+
+            showBreach();
+
+        })
+        .catch(err => {
+            console.log(err);
+            showBreach();
+        });
+
+});
+
+setTimeout(nextMessage, 5200);
+
+
+</script>
+
+</body>
+</html>
